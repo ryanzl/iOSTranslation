@@ -266,7 +266,7 @@ Core Graphics 框架包含额外的函数来创建 patterns，gradients，和 sh
 在 Core Graphics 框架中，有两种方式修改 CTM。你可以直接使用 *CGContext Reference* 中定义的 CTM 操作函数修改 CTM。你也可以创建一个 `CGAffineTransform` 结构，应用任何你想要的 transformation，然后拼接这个 transform 到这个 CTM 上。使用一个 affine transform 允许你打包 transformations，然后一次应用它们到 CTM 上。你可以计算和反转 affine transforms， 具体查看 *Quartz 2D Programming Guide* 和 *CGAffineTransform Reference*
 
 #### Flipping the Default Coordinate System
-在 UIKit 绘制中的翻转 (flipping) 修改了支撑视图的 `CALayer`，从而将一个 LLO 坐标系的绘制环境与 UIKit 的默认坐标系对齐。如果你只使用函数和方法来绘制，你不需要翻转 CTM。然而，如果混合使用 Core Graphics 或 Image I/O 函数和 UIKit 调用，翻转 CTM 可能是需要的。
+在 UIKit 绘制中的翻转 (flipping) 修改了支撑视图的 `CALayer`，从而将一个 LLO 坐标系的绘制环境与 UIKit 的默认坐标系对齐。如果你只使用UIKit函数和方法来绘制，你不需要翻转 CTM。然而，如果混合使用 Core Graphics 或 Image I/O 函数和 UIKit 调用，翻转 CTM 可能是需要的。
 
 明确的说，如果通过直接调用 Core Graphics 绘制一个图片或 PDF 文档，这个对象在 view 的 context 中被上下颠倒的渲染。你必须翻转 CTM 来正确的显示图片和页面。
 
