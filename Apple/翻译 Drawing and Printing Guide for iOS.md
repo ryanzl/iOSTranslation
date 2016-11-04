@@ -126,7 +126,7 @@ iOS 的每个绘制框架会基于当前的 graphics context 建立一个默认�
 
 在你调用视图的 `drawRect:` 方法前，UIKit 通过给绘制操作创建一个 graphics context，为绘制到屏幕提供了一个默认的坐标系。在视图的 `drawRect:` 方法里面，一个应用可以设置 graphics state 参数 (such as fill color) ，并且不需要显式的引用 graphics context 就可以绘制到 graphics context。隐式的 graphics context 是 ULO 的默认坐标系。
 
-### pt Versus px
+### pt Vs px
 在 iOS 中，在你的绘制代码中指定的坐标系和潜在设备的像素坐标系之间有个区别。当你使用如 Quartz，UIKit，Core Animation 之类的本地绘制技术时，drawing coordinate space 和视图的 coordinate space 都是 *logical coordinate spaces*，距离是以 *points* 为单位的。这些 logical coordinate systems 和系统框架所使用来管理屏幕像素的设备 coordinate space 是解耦的。
 
 系统框架自动将视图坐标系中的 points 映射到设备坐标系中的像素，但是这种映射并不总是一对一的。这种行为导致了一个你永远要记住的事实：
@@ -175,21 +175,21 @@ iOS 的每个绘制框架会基于当前的 graphics context 建立一个默认�
 
 > `UIPrintPageRenderer` 类申明了一些绘制可打印内容的方法。某种程度上和 `drawRect:` 相似，UIKit 会插入一个隐式 graphics context 在这些方法的实现中。这个 graphics context 建立一个 ULO 的默认坐标系。
 
-#### Drawing to Bitmap Contexts and PDF Contexts
+#### 在Bitmap和PDF上下文中绘图
 UIKit 提供函数在一个位图 graphics context 中渲染图片，和通过在一个 PDF graphics context 中绘制来产生 PDF 内容。这些方案都要求你首先调用一个函数来创建一个 graphics context —— 一个 bitmap context 或一个 PDF context。这个返回的对象作为当前的 graphics context 供接下来的绘制和状态设置调用。当你完成在 context 中的绘制，你可以调用另一个函数来关闭这个 context。
 
 UIKit 提供的 bitmap context 和 PDF context 都建立了一个 ULO 默认坐标系。Core Graphics 有相应的方法来在一个 bitmap graphics context 和在一个 PDF graphics context 中绘制。一个应用通过 Core Graphics 直接创建的 context 会建立一个 LLO 默认坐标系。
 
 > **注意**: 在 iOS 中，对于绘制到 bitmap context 和 PDF context，推荐你使用 UIKit 函数。然而，如果你确实使用的是 Core Graphics 的话并想要显示渲染的结果，你将必须调整你的代码来抵消这些不同坐标系的区别。
 
-### Color and Color Spaces
+### 颜色与颜色空间
 iOS 支持在 Quartz 中可用的全范围 color spaces；然而，大部分应该应该只需要 RGB 颜色空间。因为 iOS 被设计跑在嵌入式设备上，RGB 颜色空间是适用的。
 
 `UIColor` 对象提供了便利的方法来指定颜色值，你可以使用 RGB，HSB，和灰度值。当你使用这种方法创建颜色的时候，你不需要指定颜色空间。`UIColor` 对象会自动帮你决定。
 
 你也可以使用 `Core Graphics` 中的 `CGContextSetRGBStrokeColor` 和 `CGContextSetRGBFillColor` 函数创建和设置颜色。尽管 Core Graphics 框架包含支持使用其他 color space 创建颜色，和创建自定义颜色空间，在你的绘制代码使用这些颜色是不推荐。你的绘制代码应该总是使用 RGB 颜色。
 
-## Drawing with Quartz and UIKit
+## 使用Quartz和UIKit绘图
 Quartz 是 iOS 中本地绘制技术的泛称。Quartz 的核心是 Core Graphics 框架，是你使用来绘制内容的主要接口。这个框架提供了数据类型和函数来操作下面的内容：
 
 * Graphics contexts
@@ -216,7 +216,7 @@ UIKit 基于 Quartz 的基本特性为图形相关操作提供了一系列更专
 
 关于组成 UIKit 的类和方法的更多信息可以查看 *UIKit Framework Reference*。关于组成 Core Graphics 框架的 opaque type 和函数，可以查看 *Core Graphics Framework Reference*
 
-### Configuring the Graphics Context
+### 配置图形上下文
 在调用 `drawRect:` 方法之前，视图对象创建一个 graphics context 并设置它为当前的 context。这个 context 只在方法 `drawRect:` 生命周期内存在。你可以通过调用 `UIGraphicsGetCurrentContext` 函数来获取这个 graphics context 的指针。这个函数会返回一个 `CGContextRef` 类型的引用，你传递这个引用给 Core Graphics 函数来修改当前 graphics states。下表列出了设置 graphics state 不同方面的主要函数。要查看完整的列表可以参见 *CGContext Reference*。下表也列出了存在的 UIKit 替换选择。
 
 Graphics state | Core Graphics functions | UIKit alternatives
@@ -237,7 +237,7 @@ Graphics context 一个包含保存的 graphics states 的栈结构。当 Quartz
 
 关于 graphics context 的更多信息以及怎么使用它们配置绘制环境，可以参见 *Quartz 2D Programming Guide* 中的 *Graphics Context*。
 
-### Creating and Drawing Paths
+### 创建和绘制路径
 一个 path 是一个基于向量的 shape，由一系列 lines 和 Bézier curves 组成。UIKit 包含 `UIRectFrame` 和 `UIRectFill` (这是一部分) 等函数，它们可以在视图中绘制简单的 path，如矩形。 Core Graphics 同样包含创建如矩形和椭圆的简单 path 的便利函数。
 
 关于更复杂的 path，你必须使用 UIKit 的 `UIBezierPath` 类创建，或使用 Core Graphics 框架中操作 `CGPathRef`  类型的函数。尽管你这两者任一技术构建一个 path 都不需要一个 graphics context，这个 path 上的 points 仍然必须引用当前的 graphics context，你仍然需要一个 graphics context 来真实的渲染这个 path。
@@ -250,22 +250,22 @@ Graphics context 一个包含保存的 graphics states 的栈结构。当 Quartz
 
 关于使用 `UIBezierPath` 绘制 path 的更多信息，可以参见这篇文档 *Drawing Shapes Using Bézier Paths*。关于怎么使用 Core Graphics 绘制，包括制定复杂 path 元素的点的更多信息，可以查看 *Quartz 2D Programming Guide*。关于使用函数创建 paths 的更多信息，可以参见 *CGContext Reference* 和 *CGPath Reference*。
 
-### Creating Patterns, Gradients, and Shadings
+### 创建模式，渐变，阴影
 Core Graphics 框架包含额外的函数来创建 patterns，gradients，和 shadings。你使用这些类型来创建非单一的混合色并使用这些颜色来填充你创建的 path。Patterns 通过重复图片或内容来创建。Gradients 和 Shadings 提供了不同的方式来创建颜色到颜色的平滑过渡。
 
 创建和使用 patterns，gradients，和 shadings 的具体信息在 *Quartz 2D Programming Guide* 中都被覆盖了。
 
-### Customizing the Coordinate Space
+### 自定义坐标空间
 默认情况下，UIKit 创建一个 current transformation matrix 来将 points 映射到 pixels。尽管你可以在不修改这个 matrix 的情况下做所有你的绘制，但有时这么做的话更方便。
 
 当视图的 `drawRect:` 方法被初次调用的时候，CTM 被配置成系统的坐标原点和你的视图的原点相配，X 轴的正方向向右，Y 轴的正方向向下。然而，你可以通过添加 scaling，rotation，和 translation 变化到它来改变这个 CTM，从而改变默认坐标系相对于视图或 window 的潜在坐标系的大小，方向，和位置。
 
-#### Using Coordinate Transforms to Improve Drawing Performance
+#### 使用坐标变换提高绘图性能
 对于在一个视图中绘制修改 CTM 是一个标准技术，因为它允许你重用 paths，这样很可能减少绘制时所需的总计算量。例如，如果你从 (20, 20) 点开始绘制一个正方形，你可以绘制一个移到 (20, 20) 的点，然后绘制所需的线集合来完成正方形。然而，如果你稍后决定移动这个正方形到点 (10, 10)，你将需要从新的起点重绘这个正方形。因为创建 path 是相对昂贵的操作，更可取的方案是创建一个起点在 (0, 0) 的正方形，然后修改它的 CTM 以让它期望的原点上绘制。
 
 在 Core Graphics 框架中，有两种方式修改 CTM。你可以直接使用 *CGContext Reference* 中定义的 CTM 操作函数修改 CTM。你也可以创建一个 `CGAffineTransform` 结构，应用任何你想要的 transformation，然后拼接这个 transform 到这个 CTM 上。使用一个 affine transform 允许你打包 transformations，然后一次应用它们到 CTM 上。你可以计算和反转 affine transforms， 具体查看 *Quartz 2D Programming Guide* 和 *CGAffineTransform Reference*
 
-#### Flipping the Default Coordinate System
+#### 翻转默认的坐标系统
 在 UIKit 绘制中的翻转 (flipping) 修改了支撑视图的 `CALayer`，从而将一个 LLO 坐标系的绘制环境与 UIKit 的默认坐标系对齐。如果你只使用UIKit函数和方法来绘制，你不需要翻转 CTM。然而，如果混合使用 Core Graphics 或 Image I/O 函数和 UIKit 调用，翻转 CTM 可能是需要的。
 
 明确的说，如果通过直接调用 Core Graphics 绘制一个图片或 PDF 文档，这个对象在 view 的 context 中被上下颠倒的渲染。你必须翻转 CTM 来正确的显示图片和页面。
@@ -284,7 +284,7 @@ CGContextRestoreGState(graphicsContext);
 
 > **注意**: 你可以使用 Core Graphics 函数 `CGContextDrawImage` 来绘制图片到任何目的地。这个函数有两个参数，一个 graphics context 和一个定义图片大小和平面中绘制位置的 rectangle。当你使用 `CGContextDrawImage` 绘制一个图片的时候，如果你不调整当前的坐标系统为 LLO 方向的话，在 UIKit 视图中图片会看上去倒立显示。另外，传递给这个 rectangle 的原点是相对于函数调用时当前正在使用的系统坐标系而言的。
 
-#### Side Effects of Drawing with Different Coordinate Systems
+#### 使用不同的坐标系统绘图的副作用
 当你使用一种绘制技术的默认坐标系来绘制一个对象，然后在另一个坐标系的 graphics context 中渲染时一些渲染时的怪事就会发生。你也许需要调节你的代码来消除这些副作用。
 
 ##### Arcs and Rotations
@@ -294,10 +294,10 @@ CGContextRestoreGState(graphicsContext);
 
 如果你旋转一个对象 (例如，通过调用`CGContextRotateCTM`)，你可以观察到相同的镜面效果。如果你在一个 ULO 坐标系中使用 Core Graphics 来旋转一个对象，这个对象在 UIKit 中渲染时它的方向是相反的。你必须考虑在你的代码中考虑到旋转方向的不同。使用 `CGContextRotateCTM`，你通过翻转 `angle` 参数的符号来做这件事。
 
-##### Shadows
+##### 阴影
 一个对象的 shadow 的方向有它的 offset 值来指定，这个 offset 的意义是一个绘制框架的 convention。在 UIKit 中，offset 的 x 和 y 是正值的话，使 shadow 在对象的右下方。在 Core Graphics 中，offset 的 x 和 y 使得 shadow 在对象的右上。Flipping the CTM 来对齐 UIKit 的对象与默认坐标系并不影响这个对象的 shadow，所以一个 shadow 会正确的紧随它的对象。为了正确的追随它的对象，你必须根据当前的坐标系正确的修改 offset。
 
-## Applying Core Animation Effects
+## 应用 Core Animation 效果
 Core Animation 是一个 Objective-C 框架，提供了快速方便创建流畅、实时动画的基础架构。从 Core Animation 自身并不提供创建 shapes，images，或其它类型的内容的角度来看，Core Animation 自身并不是一个绘制技术。相反，它是一个操作和展示你使用其他技术创建的内容的技术。
 
 iOS 中的大部分应用都在某种程度上受益于 Core Animation。动画提供了正在发生内容的反馈。例如，当用户在设置应用的中导航时，屏幕基于用户是进一步查看更深层次的内容还是退回上层内容来滑入滑出视图。这种类型的反馈很重要，给用户提供了上下文信息。同样也加强了应用的视觉信息。
@@ -306,7 +306,7 @@ iOS 中的大部分应用都在某种程度上受益于 Core Animation。动画�
 
 当你不再需要一般的动画的时候，你必须与 Core Animation 类和方法更直接的交互。下面的部分提供了关于 Core Animation 的一些信息，并展示了怎么使用它里面的类和方法创建典型的动画。关于 Core Animation 的更多信息，可以参见 *Core Animation Programming Guide*。
 
-### About Layers
+### 关于 Layers
 Core Animation 中的核心技术是 layer 对象。Layer 是轻量级的对象，性质上跟视图较像，但是实际上它们是封装了 geometry，timing，和你想要展示的内容的一些视觉属性的模型对象 (model objects)。layer 的内容有以下三种方式提供：
 
 * 你可以指定一个 `CGImageRef` 对象给 layer 对象的 `contents` 属性
@@ -317,7 +317,7 @@ Core Animation 中的核心技术是 layer 对象。Layer 是轻量级的对象�
 
 关于 layers 和怎么使用它们的更多信息，你可以参见 *Core Animation Programming Guide*
 
-### About Animations
+### 关于 Animations
 当需要给 layers 做动画的时候，Core Animation 使用单独的动画对象来控制动画的计时和行为。`CAAnimation` 类和它的子类提供了不同类型的动画行为，你可以在你的代码中使用这些动画。你可以创建将属性从一个值移动到另一个值的简单动画，你可以创建复杂的 keyframe 动画。
 
 Core Animation 同样让你组合多个动画到一起成为一个单元，称为一个 transaction。`CATransaction` 对象以一个单元管理一组动画。你可以使用这个类的方法来设置动画的时长。
