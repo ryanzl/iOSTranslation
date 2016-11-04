@@ -1,4 +1,4 @@
-# About Drawing and Printing in iOS
+# 关于iOS中的绘图和打印
 这篇文档会覆盖以下主题：
 
 * 绘制自定义 UI 视图. 自定义 UI 视图允许你绘制那些标准 UI 元素不能轻易绘制的内容. 例如一个绘制程序可能为用户的绘制使用一个自定义视图, 或一个 arcade 游戏使用一个自定义视图来绘制 sprites
