@@ -7,10 +7,10 @@
 
 <img src="https://raw.githubusercontent.com/0oneo/iOSTranslation/master/images/iOSDrawingPrinting/custom-view-and-standard-view.png" width=80% />
 
-## At a Glance
+## 概述
 iOS 本地的图形系统主要有三种技术：UIKit,  Core Graphics 和 Core Animation. UIKit 提供了视图和一些在这些视图中绘制的高级功能, Core Graphics 提供了额外的在 UIKit 视图中 (底层) 绘制支持, Core Animation 提供了应用 transformations 和动画到 UIKit 视图的能力. Core Animation 同样也负责视图组合 (view compositing)。
 
-## Custom UI Views Allow Greater Drawing Flexibility
+## 自定义视图提供更大的绘图灵活性
 这份文档描述了使用本地绘制技术绘制到自定义视图。这些技术包括 Core Graphics 和 UIKit 框架都支持 2D 绘制。
 
 在你考虑使用自定义 UI 视图前，你应该确定是否真需要这么做。本地绘制适合于处理更复杂的 2D 布局需求。然而，因为自定义视图是处理器密集的，你应该限制使用本地绘制技术绘制的总量。
@@ -30,14 +30,14 @@ iOS 本地的图形系统主要有三种技术：UIKit,  Core Graphics 和 Core 
 
 因为自定义视图通常是处理器密集型的 (很少用到 GPU)，如果你可以通过使用标准视图来完成你想做的，你应该总是这么做。同样，你应该尽可能少的创建自定义视图，你的自定义视图应该包含你通过其他方式不能绘制的内容。如果你需要组合标准 UI 组件和自定绘制，考虑使用一个 Core Animation layer 来叠加一个自定义视图和一个标准视图以便尽可能少的绘制。
 
-### A Few Key Concepts Underpin Drawing With the Native Technologies
+### 本地绘图技术的一些关键概念
 当你使用 UIKit 和 Core Graphics 绘制内容的时候，你应该熟悉视图绘制周期外的一些概念。
 
 * 对于 `drawRect:` 方法，UIKit 创建一个 **graphics context** 供渲染显示用。这个 graphics context 包含绘制系统进行绘制所需的信息，包括 fill 和 stroke 颜色，字体，clipping area 和 line width 等信息。你也可以为位图和 PDF 内容创建并绘制到自定义 graphics context。
 * UIKit 有一个 **default coordinate system**，这个坐标系绘制的原点在左上角。正方向是向下和向右。你可以改变大小，你可以通过修改当前的 transformation 矩阵来改变相对于视图或窗口的默认坐标系的大小，方向和位置。
 * 在 iOS 中，**logical coordinate space** 以 point 为单位来度量距离，这个坐标空间是不等同于 device coordinate space 的，后者以像素为单位。为了更准确的原因，points 是通过浮点数表示的。
 
-### UIKit, Core Graphics, and Core Animation Give Your App Many Tools For Drawing
+### UIKit, Core Graphics, 和 Core Animation 为应用提供多个绘图工具
 UIKit 和 Core Graphics 有许多围绕 graphics context 的互补图形功能，Bézier paths, images，bitmaps，transparency layers，colors，fonts，PDF content，and drawing rectangles and clipping areas. 另外，Core Graphics 提供了与 line attributes, color spaces, pattern colors, gradients, shadings, and image masks 相关的功能. Core Animation 框架使你能够通过操作和展示其他技术创建的内容来创建流畅的动画。
 
 ## Apps Can Draw Into Offscreen Bitmaps or PDFs
@@ -62,7 +62,7 @@ UIKit 和 Core Graphics 有许多围绕 graphics context 的互补图形功能�
 关于打印的完整例子，可以参见 *PrintPhoto*, *Sample Print Page Renderer*,  and *UIKit Printing with UIPrintInteractionController and UIViewPrintFormatter* 样例代码。
 
 ---
-# iOS Drawing Concepts
+# iOS 绘图概念
 高质量的图形是你应用界面重要的一部分。提供高质量图形不仅仅使你的应用好看，也让你的应用看起来是系统其它部分的自然延伸。iOS 提供了两种路径来创建系统中的高质量图形 : OpenGL 或 使用 Quartz, Core Animation, UIKit 来本地渲染。这篇文档描述本地渲染. (想要了解 OpenGL 绘制的话，请参见 *OpenGL ES Programming Guide for iOS*)
 
 Quartz 是主要的绘制接口，提供了基于 base 的绘制，anti-aliased 渲染，gradient fill patterns，images，colors，coordinate-space transformations，PDF document creation，display，parsing。UIKit 为 line art，Quartz images, color 操作提供了 Objective-C 的封装。Core Animation 提供动画显示 UIKit 视图属性变化的潜在支持，可被用来实现自定义动画。
@@ -71,12 +71,12 @@ Quartz 是主要的绘制接口，提供了基于 base 的绘制，anti-aliased 
 
 > **重要**: 并不是所有的 UIKit 类是线程安全的。在非主线程绘制相关的操作时主意检查文档
 
-## The UIKit Graphics System
+## UIKit 图形系统
 在 iOS 中，所有绘制到屏幕的操作——不管它是设计到 OpenGL，Quartz，UIKit，或 Core Animation——发生在一个 `UIView` 类或其子类实例的范围内。Views 定义了屏幕上绘制所发生的区域。如果你使用系统提供的视图，这种绘制会自动帮你处理。如果你自定义视图，你必须自己提供绘制代码。如果你使用 Quartz，Core Animation，UIKit 来绘制，你会使用到下面描述的绘制概念。
 
 除了直接绘制到屏幕上外，UIKit 同样也允许你绘制到 offscreen 位图和 PDF graphics context 中。当你绘制到一个 offscreen context 中时，你不是会绘制到一个 view，这意味着类似于 drawing cycle 的概念并不适用。 (除非你获取这个图片，并绘制它到屏幕上)
 
-### The View Drawing Cycle
+### View 绘图生命周期
 对于 UIView 的子类基本的绘制模型涉及到按需的更新内容。然而`UIView` 类使得更新过程简单和高效，这是通过收集你做的更新请求，并在核实的时候把它们传送给绘制代码的。
 
 当一个视图初次显示或当视图的一部分需要重绘，iOS 通过调用视图的 `drawRect:` 方法来要求视图绘制它的内容。
@@ -96,7 +96,7 @@ Quartz 是主要的绘制接口，提供了基于 base 的绘制，anti-aliased 
 
 > **重要**: 你自己不要调用视图的 `drawRect:` 方法。这个方法应该只被 iOS 自带代码在屏幕重绘的时候调用。在其它的时候，没有 graphics context 存在，所以绘制是不可能的。
 
-### Coordinate Systems and Drawing in iOS
+### iOS中的坐标系统和绘图系统
 当 iOS 中的一个应用绘制些东西的时候，它必须在坐标系定义的二维空间中定位被绘制的内容。这个概念初看起来可能很直接，但并不是。iOS 中的应用在绘制的时候有时需要处理不同的坐标系。
 
 在 iOS 中，所有的绘制都发生在一个 graphics context。概念上，一个 graphics context 是一个描述绘制应该在哪里和怎样发生的对象，它包含了基本绘制属性如绘制时使用的颜色，clipping area，line width 和样式信息，字体信息，compositing 选项等等。
@@ -126,7 +126,7 @@ iOS 的每个绘制框架会基于当前的 graphics context 建立一个默认�
 
 在你调用视图的 `drawRect:` 方法前，UIKit 通过给绘制操作创建一个 graphics context，为绘制到屏幕提供了一个默认的坐标系。在视图的 `drawRect:` 方法里面，一个应用可以设置 graphics state 参数 (such as fill color) ，并且不需要显式的引用 graphics context 就可以绘制到 graphics context。隐式的 graphics context 是 ULO 的默认坐标系。
 
-### Points Versus Pixels
+### pt Versus px
 在 iOS 中，在你的绘制代码中指定的坐标系和潜在设备的像素坐标系之间有个区别。当你使用如 Quartz，UIKit，Core Animation 之类的本地绘制技术时，drawing coordinate space 和视图的 coordinate space 都是 *logical coordinate spaces*，距离是以 *points* 为单位的。这些 logical coordinate systems 和系统框架所使用来管理屏幕像素的设备 coordinate space 是解耦的。
 
 系统框架自动将视图坐标系中的 points 映射到设备坐标系中的像素，但是这种映射并不总是一对一的。这种行为导致了一个你永远要记住的事实：
@@ -159,14 +159,14 @@ iOS 的每个绘制框架会基于当前的 graphics context 建立一个默认�
 
 当然，基于一个 scale factor 来改变绘制特点也许有意外的结果。一个 1-pixel-wide 的线可能在一些设备上看起来不错，但是在一个高分辨率的设备上看起来过细以致很难清除的辨别。当然由你来决定是否要做类似的改变。
 
-### Obtaining Graphics Contexts
+### 获取图形上下文
 大部分时候，graphics context 会为你配置。每个视图对象自动创建一个 graphics context，以便你的自定义方法 `drawRect:` 被调用的时候可以立即开始绘制内容。潜在的 `UIView` 类为绘制环境创建一个 graphics context (一个 `CGContextRef` opaque type) ，这个过程作为配置的一部分。
 
 如果你想要视图外的某些地方绘制的话 (例如把一系列的绘制操作输出到一个 PDF 或一个位图文件中)，或如果你需要调用需要一个 context 对象的 Core Graphics 函数，你必须采取额外的步骤来获得一个 graphics context 对象。下面的部分描述了怎么做。
 
 关于 Graphics contexts，修改 graphics state 信息，和使用 graphics context 的更多信息，可以参见 *Quartz 2D Programming Guide*。关于和 graphics context 一起使用的函数列表可以参见 *CGContext Reference*, *CGBitmapContext Reference*, 和 *CGPDFContext Reference*。   
 
-#### Drawing to the Screen
+#### 在屏幕上绘图
 如果你使用 Core Graphics 函数绘制到一个视图的话，要么是在 `drawRect:` 方法或其他地方，你都将需要一个 graphics context 来绘制。(这些函数中许多的第一个参数都是一个 `CGContextRef` 对象) 你可以调用函数 `UIGraphicsGetCurrentContext` 来获取一个隐式为方法 `drawRect:` 创建的 graphics context 的显式版本。因为是同一个 graphics context，绘制函数也应该引用一个默认的 ULO 坐标系统。
 
 如果你想要使用 Core Graphics 函数来在一个 UIKit 视图里绘制的话，你应该使用 UIKit 的 ULO 坐标系来进行绘制操作。或者，应用一个 flip transform 到 CTM，然后使用 Core Graphics 本地的 LLO 坐标系绘制到 UIKit 视图上。
