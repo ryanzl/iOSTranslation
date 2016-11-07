@@ -352,7 +352,7 @@ iOS 3.2 起，你可以使用 `UIBezierPath` 类来创建基于向量的 path。
 构建和使用一个 path 对象的过程是分开的。构建这个 path 是第一个过程，涉及到以下步骤：
 
 1. 创建这个 path 对象
-2. 设置你的 `UIBezierPath` 对象任何相关绘制属性，如 `lineWidth`，或 `lineJoinStyle`，或 `usesEvenOddFillRule`，这些绘制属性应用到真个 path
+2. 设置你的 `UIBezierPath` 对象任何相关绘制属性，如 `lineWidth`，或 `lineJoinStyle`，或 `usesEvenOddFillRule`，这些绘制属性应用到整个 path
 3. 调用 `moveToPoint:` 设置开始的部分的起始点 
 4. 添加直线和曲线段来定义一个 subpath
 5. 选择性的调用 `closePath` 来关闭 subpath，这会从最后一个部分结束点画一条直线到第一个部分的起始点。
@@ -360,9 +360,9 @@ iOS 3.2 起，你可以使用 `UIBezierPath` 类来创建基于向量的 path。
 
 当你构建你的 path 时，你应该相对于原点 (0, 0) 来指定你的 path 上点的坐标。这样做使得将来移动 path 更简单。在绘制的过程中，path 的 points 使用起来和 current graphics context 的坐标系是一样的。如果你的 path 的方向是相对于原点的，要重定位它的话你只需要使用一个有 translation factor 的 affine transform 到 current graphics context。修改 graphics context 的优点 (相对于 path 对象自身) 是通过保存和恢复 graphics state 你可以轻易的撤销这个 transformation。
 
-要绘制一个你的 path 对象，你使用 `stoke` 和 `fill` 方法。这些方法在当前的 graphics context 中渲染你的 path 的直线和曲线部分。渲染的过程设计到使用你的 path 对象的属性栅格化你的直线和曲线部分。栅格化的过程并不会改变 path 对象自身。结果是，你可以多次渲染一个 path 对象，在当前的 context 或另一个 context。
+要绘制一个你的 path 对象，你使用 `stoke` 和 `fill` 方法。这些方法在当前的 graphics context 中渲染你的 path 的直线和曲线部分。渲染的过程会使用你的 path 对象的属性栅格化你的直线和曲线部分。栅格化的过程并不会改变 path 对象自身。结果是，你可以在当前的 context 或另一个 context中多次渲染一个 path 对象。
 
-## Adding Lines and Polygons to Your Path
+## 为你的Path添加直线和多边形
 直线和多边形是简单的形状，你可以使用 `moveToPoint:` 和 `addLineToPoint:` 构建。`moveToPoint:` 方法设置你想要创建的形状的起始点。从这点开始，你通过调用 `addLineToPoint:` 方法创建形状的线段。你连续的创建这些线段，每条线段由你之前指定的点和你新指定的点构成。
 
 下面的例子展示了使用线段创建一个 pentagon 形状所需的代码。(Figure 2-1 显式了使用合适的 stroke 和 fill 颜色绘制这个形状的结果，将在 *Rendering the Contents of a Bézier Path Object* 介绍) 这段代码设置了形状的初始点，然后添加四个相连的线段。第五个线段由 `closePath` 调用添加，它连接了最后的 (0, 40) 和起点  (100, 0)。
