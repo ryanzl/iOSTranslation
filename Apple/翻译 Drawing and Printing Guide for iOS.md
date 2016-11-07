@@ -339,12 +339,12 @@ Core Animation 的 compositing engine 会检查每个 layer 的 `contentsScale` 
 关于怎么指定和加载图片，可参见本文的 *Loading Images into Your App*。关于怎么创建高分辨率的图片，可以参见本文的 *Drawing to Bitmap Contexts and PDF Contexts*。
 
 -----
-# Drawing Shapes Using Bézier Paths
+# 使用 Bézier Paths 绘制形状
 iOS 3.2 起，你可以使用 `UIBezierPath` 类来创建基于向量的 path。`UIBezierPath` 类是一个 Core Graphics 框架中 path 相关特性的一个 Objective-C 封装。你可以使用这个类来定义简单的 shapes，如椭圆和矩形，那些包含多个直线和曲线段的复杂 shape 也可以。
 
 你可以使用 path 对象来绘制应用 UI 接口的形状。你可以绘制 path 的轮廓，填充它包围的空间，或同时填充空间和轮廓。你可以使用 path 来定义当前 graphics context 的 clipping path，clipping path 会影响接下来在 context 中绘制操作。
 
-## Bézier Path Basics
+## Bézier Path 基础
 一个 `UIBezierPath` 对象是一个 `CGPathRef` 数据类型的包装。*Paths* 是基于直线和曲线段构建的基于向量的形状。你可以使用直线段来创建矩形和多边形，你可以使用曲线来创建弧线，圆，和复杂的曲线形状。不论直线段还是曲线段都是由一个或多个点 (在当前的坐标系中) 和一个定义点是怎么解释的绘制命令构成。
 
 每个连接的直线或曲线段的集合组成了一个 *subpath*。subpath 的一条线段或曲线段的结束点定义了下一个的开始。一个单一的 `UIBezierPath` 对象可能包含一个或多个 subpath 来定义真个 path，这些 subpath 由 `moveToPoint:` 命令分隔，这个命令实质上是提提起画笔并移动它到一个新位置。
