@@ -325,7 +325,7 @@ Core Animation 同样让你组合多个动画到一起成为一个单元，称�
 关于怎么创建自定义动画的样例，可以参见 *Animation Types and Timing Programming Guide*
 
 ### Accounting for Scale Factors in Core Animation Layers
-使用 Core Animation layers 直接提供内容的应用也许需要调整它们的绘制来将 scale factors 考虑在内。通常，当你在视图的 `drawRect:` 绘制时，或在 layer's delegate 方法 `drawLayer:inContext:` 中绘制的时候，系统会根据 scale factor 来调整 graphics context。然而，知道或改变 scale factor 在视图做以下事情时仍然是需要的：
+使用 Core Animation layers 直接提供内容的应用有时候需要根据 scale factors 调整绘图代码。通常，当你在视图的 `drawRect:` 绘制时，或在 layer's 代理方法 `drawLayer:inContext:` 中绘制的时候，系统会根据 scale factor 来调整 graphics context。然而，当你需要在视图做以下操作时，了解或改变 scale factor 是非常必要的：
 
 * 使用不同的 scale factor 创建额外的 Core Animation Layers 并组合它们到视图的内容中去。
 * 直接设置一个 Core Animation layer 的 `contents` 属性
