@@ -384,7 +384,7 @@ UIBezierPath *aPath = [UIBezierPath bezierPath];
 
 使用 `closPath` 方法不仅关闭描述形状的 subpath，同时它也在终点和起点间绘制一个线段。这是绘制一个多边形的方便方式，因为不需要绘制最后一个线段。
 
-## Adding Arcs to Your Path
+## 添加弧线到Path
 `UIBezierPath` 类提供了使用弧线段来初始化一个 path 对象的支持。方法 `bezierPathWithArcCenter:radius:startAngle:endAngle:clockwise:` 的参数定义了包含期望弧线的圆和弧线的起始和结束点。下图展示了创建一个弧线所需的组成，包括定义弧线的圆和指定它的弧度。这个例子中，弧线是按时钟的方向创建的。(按照反时钟方向的话将绘制圆的虚线部分) 。
 
 <img src="https://raw.githubusercontent.com/0oneo/iOSTranslation/master/images/iOSDrawingPrinting/an_arc_in_the_default_coordinate_system.png" width=80% />
